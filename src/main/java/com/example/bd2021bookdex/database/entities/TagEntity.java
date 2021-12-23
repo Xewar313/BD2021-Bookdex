@@ -12,7 +12,7 @@ public class TagEntity {
     private int id;
     @Column(name = "tag_name")
     private String name;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
             name = "BOOK_TAGGING",
             joinColumns = { @JoinColumn(name = "tag_id")},
@@ -25,6 +25,9 @@ public class TagEntity {
         this.books = books;
     }
 
+    public void clearBooks() {
+        books.clear();
+    }
     public TagEntity() {
         
     }

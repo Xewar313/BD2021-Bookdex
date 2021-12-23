@@ -27,7 +27,7 @@ public class BookEntity implements Serializable {
     @Column(name = "book_desc")
     private String description;
     
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany
     @JoinTable(
           name = "AUTHORSHIP",
           joinColumns = { @JoinColumn(name = "book_id")},

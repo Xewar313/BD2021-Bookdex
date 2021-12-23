@@ -21,6 +21,8 @@ public class UserEntity implements Serializable {
     private Set<BookStatusEntity> foundBooks;
     @OneToMany(mappedBy = "owner")
     private Set<BookCollectionEntity> collections;
+    @OneToMany(mappedBy = "user")
+    private Set<ChangesEntity> changes;
     public UserEntity() {
         
     }
@@ -34,5 +36,13 @@ public class UserEntity implements Serializable {
 
     public Set<BookStatusEntity> getFoundBooks() {
         return foundBooks;
+    }
+    public Set<ChangesEntity> getChanges() {
+        return changes;
+    }
+    public  Set<BookCollectionEntity> getCollections() { return collections;}
+
+    public String getUsername() {
+        return username;
     }
 }

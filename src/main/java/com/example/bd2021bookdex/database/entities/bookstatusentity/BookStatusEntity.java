@@ -1,10 +1,12 @@
 package com.example.bd2021bookdex.database.entities.bookstatusentity;
 
+import com.example.bd2021bookdex.database.entities.BookCollectionEntity;
 import com.example.bd2021bookdex.database.entities.BookEntity;
 import com.example.bd2021bookdex.database.entities.UserEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @Entity
 @Table(name = "BOOK_STATUS")
@@ -22,6 +24,17 @@ public class BookStatusEntity implements Serializable {
     @MapsId("ownerId")
     @ManyToOne
     private UserEntity owner;
+    
+    @ManyToMany
+    @JoinTable(
+            name = "COLLECTION_OWNERSHIP",
+            joinColumns = {
+                    @JoinColumn(name = "book_id"),
+                    @JoinColumn(name = "owner_id")
+            },
+            inverseJoinColumns = { @JoinColumn(name = "collection_id")}
+    )
+    private Set<BookCollectionEntity> collections;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "book_state")
