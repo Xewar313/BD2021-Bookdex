@@ -6,6 +6,7 @@ import com.example.bd2021bookdex.database.entities.UserEntity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -55,7 +56,32 @@ public class BookStatusEntity implements Serializable {
         this.book = book;
         this.owner = user;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookStatusEntity that = (BookStatusEntity) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     public BookEntity getBook() {
         return  book;
+    }
+
+    public boolean isAtLeastAdded() {
+        return status != BookStatusEnum.FOUND;
+    }
+
+    public boolean isOwned() {
+        return isOwned;
+    }
+    public BookStatusEnum getStatus() {
+        return status;
     }
 }

@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "RECENT_CHANGES")
-public class ChangesEntity {
+public class ChangesEntity implements Comparable<ChangesEntity>{
     @Id
     @GeneratedValue
     @Column(name = "id")
@@ -32,5 +32,22 @@ public class ChangesEntity {
         user = changer;
         lastStatusChange = changeDate;
         changeType = change;
+    }
+
+    @Override
+    public int compareTo(ChangesEntity o) {
+        return lastStatusChange.compareTo(o.lastStatusChange);
+    }
+
+    public BookEntity getBook() {
+        return book;
+    }
+
+    public BookStatusEnum getStatus() {
+        return changeType;
+    }
+
+    public java.sql.Date getDate() {
+        return lastStatusChange;
     }
 }

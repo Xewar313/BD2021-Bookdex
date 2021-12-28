@@ -21,7 +21,7 @@ public class UserEntity implements Serializable {
     private Set<BookStatusEntity> foundBooks;
     @OneToMany(mappedBy = "owner")
     private Set<BookCollectionEntity> collections;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<ChangesEntity> changes;
     public UserEntity() {
         

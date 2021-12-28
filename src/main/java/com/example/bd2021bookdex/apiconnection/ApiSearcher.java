@@ -1,0 +1,146 @@
+package com.example.bd2021bookdex.apiconnection;
+
+import com.example.bd2021bookdex.BookSearcher;
+import com.example.bd2021bookdex.database.DatabaseModifier;
+import com.example.bd2021bookdex.database.DatabaseSearcher;
+import com.example.bd2021bookdex.database.entities.AuthorEntity;
+import com.example.bd2021bookdex.database.entities.BookEntity;
+import com.google.gson.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+@Component
+public class ApiSearcher extends BookSearcher {
+
+    DatabaseModifier DM;
+    DatabaseSearcher SE;
+    @Autowired
+    public ApiSearcher(DatabaseModifier x, DatabaseSearcher s) {
+        DM = x;
+        SE = s;
+    }
+    
+    public List<BookEntity> getBooks() throws IOException {
+        
+
+        Gson gson = new Gson();
+        JsonObject body = gson.fromJson(getBooksAsJson(), JsonObject.class);
+        JsonArray books = body.get("items").getAsJsonArray();
+        List<BookEntity> toReturn = new LinkedList<>();
+        
+        for (JsonElement book : books) {
+            BookEntity toAdd;
+            JsonObject bookObject = book.getAsJsonObject();
+            String googleId = bookObject.get("id").getAsString();
+            toAdd = SE.getByGoogleId(googleId);
+            if (toAdd != null) {
+                toReturn.add(toAdd);
+                continue;
+            }
+            JsonObject volumeObject = bookObject.get("volumeInfo").getAsJsonObject();
+            String title = null;
+            if (volumeObject.get("title") == null)
+                continue;
+            title = volumeObject.get("title").getAsString();
+            List<String> authors = new LinkedList<>();
+            if (volumeObject.get("authors") != null)
+                for (JsonElement e : volumeObject.get("authors").getAsJsonArray()) {
+                    authors.add(e.getAsString());
+                }
+            
+            String desc = null;
+            if (volumeObject.get("description") != null) {
+                desc = volumeObject.get("description").getAsString();
+                desc = desc.substring(0,Math.min(3999,desc.length() - 1));
+            }
+            String link = null;
+            if (volumeObject.get("imageLinks") != null && volumeObject.get("imageLinks").getAsJsonObject().get("thumbnail") != null)
+                link = volumeObject.get("imageLinks").getAsJsonObject().get("thumbnail") .getAsString();
+            String category = null;
+            if (volumeObject.get("categories") != null) {
+                category = volumeObject.get("categories").getAsJsonArray().get(0).getAsString();
+            }
+            int pageCount = 0;
+            if (volumeObject.get("pageCount") != null) {
+                pageCount = volumeObject.get("pageCount").getAsInt();
+            }
+            Set<AuthorEntity> authorsEntity = new HashSet<>();
+            
+            for (String n : authors) {
+                AuthorEntity temp = SE.getAuthor(n);
+                if (temp == null) {
+                    temp = new AuthorEntity(n);
+                    DM.addToDb(temp);
+                }
+                authorsEntity.add(temp);
+            }
+            toAdd = new BookEntity(title,link,pageCount,googleId,category,null,desc,authorsEntity);
+            
+            DM.addToDb(toAdd);
+        }
+        return toReturn;
+    }
+    
+    public String getBooksAsJson() throws IOException{
+        StringBuilder urlCreator = new StringBuilder();
+        urlCreator.append("https://www.googleapis.com/books/v1/volumes?q=");
+        if (titles.isEmpty() && authors.isEmpty() && categories.isEmpty()) {
+            return null;
+        }
+        if (!titles.isEmpty()) {
+            for (String title : titles) {
+                urlCreator.append(title).append('+');
+            }
+            urlCreator.deleteCharAt(urlCreator.length() - 1);
+        }
+        if (!authors.isEmpty()) {
+            urlCreator.append("inauthor:");
+            for (String author : authors) {
+                urlCreator.append(author).append("+");
+            }
+            urlCreator.deleteCharAt(urlCreator.length() - 1);
+        }
+
+        if (!categories.isEmpty()) {
+            urlCreator.append("subject:");
+            for (String category : categories) {
+                urlCreator.append(category).append("+");
+            }
+            urlCreator.deleteCharAt(urlCreator.length() - 1);
+        }
+        URL url = new URL(urlCreator.toString());
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        String jsons = con.getRequestMethod();
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+
+        in.close();
+        con.disconnect();
+        return content.toString();
+    }
+}

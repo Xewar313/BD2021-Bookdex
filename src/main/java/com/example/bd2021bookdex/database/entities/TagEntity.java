@@ -12,12 +12,7 @@ public class TagEntity {
     private int id;
     @Column(name = "tag_name")
     private String name;
-    @ManyToMany
-    @JoinTable(
-            name = "BOOK_TAGGING",
-            joinColumns = { @JoinColumn(name = "tag_id")},
-            inverseJoinColumns = { @JoinColumn(name = "book_id")}
-    )
+    @ManyToMany (mappedBy = "tags")
     private Set<BookEntity> books;
     
     public TagEntity(String name, Set<BookEntity> books) {
@@ -30,5 +25,11 @@ public class TagEntity {
     }
     public TagEntity() {
         
+    }
+    public int getId() {
+        return id;
+    }
+    public String getName() {
+        return name;
     }
 }

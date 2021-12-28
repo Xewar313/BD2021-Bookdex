@@ -1,8 +1,10 @@
 package com.example.bd2021bookdex.database.entities;
 
 import javax.persistence.*;
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -26,8 +28,9 @@ public class BookEntity implements Serializable {
     private String genre;
     @Column(name = "book_desc")
     private String description;
-    
-    @ManyToMany
+    //Despite the fact that FetchType.EAGER should be avoided, I decided to use it here, 
+    //because every time we get BookEntity, we want to know about its authors
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
           name = "AUTHORSHIP",
           joinColumns = { @JoinColumn(name = "book_id")},
@@ -35,7 +38,13 @@ public class BookEntity implements Serializable {
     )
     private Set<AuthorEntity> authors;
     
-    @ManyToMany(mappedBy = "books")
+    //as above
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "BOOK_TAGGING",
+            joinColumns = { @JoinColumn(name = "book_id")},
+            inverseJoinColumns = { @JoinColumn(name = "tag_id")}
+    )
     private Set<TagEntity> tags;
     public BookEntity() {}
     public BookEntity(String title,
@@ -54,9 +63,57 @@ public class BookEntity implements Serializable {
         this.genre =genre;
         this.description = description;
          this.authors = new HashSet<>(authors);
+         this.tags = new HashSet<>();
     }
 
     public int getId() {
         return id;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookEntity that = (BookEntity) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public Set<AuthorEntity> getAuthors() {
+        int x = authors.size();
+        return new HashSet<>(authors);
+    }
+
+    public String getLink() {
+        return thumbnailLink;
+    }
+
+    public String getDesc() {
+        return description;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public int getCount() {
+        return pageCount;
+    }
+
+    public Set<TagEntity> getTags() {
+        return tags;
+    }
+
 }

@@ -2,12 +2,12 @@ CREATE SEQUENCE hibernate_sequence START 1;
 CREATE TABLE BOOK (
     id SERIAL NOT NULL,
     title VARCHAR(150) NOT NULL,
-    thumbnail_link VARCHAR(60) default NULL,
+    thumbnail_link VARCHAR(200) default NULL,
     page_count INT default NULL,
-    google_id VARCHAR(20) default NULL,
+    google_id VARCHAR(30) default NULL,
     category VARCHAR(40) default NULL,
     genre VARCHAR(40) default NULL,
-    book_desc VARCHAR(300) default NULL,
+    book_desc VARCHAR(4000) default NULL,
     PRIMARY KEY (id),
     UNIQUE (google_id)
 );
