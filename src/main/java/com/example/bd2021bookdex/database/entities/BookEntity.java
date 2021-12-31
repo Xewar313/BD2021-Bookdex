@@ -1,6 +1,7 @@
 package com.example.bd2021bookdex.database.entities;
 
 import javax.persistence.*;
+import javax.swing.*;
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -116,4 +117,14 @@ public class BookEntity implements Serializable {
         return tags;
     }
 
+    public void setGenre(String text) {
+        genre = text;
+    }
+
+    public void setTags(DefaultListModel<TagEntity> added) {
+        tags.clear();
+        for (var tag: added.toArray()) {
+            tags.add((TagEntity) tag);
+        }
+    }
 }

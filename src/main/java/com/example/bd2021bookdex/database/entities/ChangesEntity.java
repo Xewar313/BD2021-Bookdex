@@ -1,5 +1,6 @@
 package com.example.bd2021bookdex.database.entities;
 
+import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEnum;
 
 import javax.persistence.*;
@@ -27,16 +28,18 @@ public class ChangesEntity implements Comparable<ChangesEntity>{
     private BookEntity book;
     
     public ChangesEntity(){}
-    public ChangesEntity(BookStatusEnum change, java.sql.Date changeDate, BookEntity object, UserEntity changer) {
-        book = object;
-        user = changer;
-        lastStatusChange = changeDate;
-        changeType = change;
+    public ChangesEntity(BookStatusEntity change) {
+        book = change.getBook();
+        user = change.getUser();
+        lastStatusChange = change.getDate();
+        changeType = change.getStatus();
     }
 
     @Override
     public int compareTo(ChangesEntity o) {
-        return lastStatusChange.compareTo(o.lastStatusChange);
+        if (o.lastStatusChange.compareTo(lastStatusChange) == 0)
+            return o.book.getTitle().compareTo(book.getTitle());
+        return o.lastStatusChange.compareTo(lastStatusChange);
     }
 
     public BookEntity getBook() {

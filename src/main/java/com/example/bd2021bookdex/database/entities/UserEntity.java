@@ -42,6 +42,11 @@ public class UserEntity implements Serializable {
     }
     public  Set<BookCollectionEntity> getCollections() { return collections;}
 
+    @Override
+    public String toString() {
+        return username;
+    }
+
     public String getUsername() {
         return username;
     }

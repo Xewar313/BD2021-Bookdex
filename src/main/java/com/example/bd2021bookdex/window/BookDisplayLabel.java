@@ -1,18 +1,24 @@
 package com.example.bd2021bookdex.window;
 
+import com.example.bd2021bookdex.database.DatabaseModifier;
+import com.example.bd2021bookdex.database.DatabaseSearcher;
 import com.example.bd2021bookdex.database.entities.AuthorEntity;
 import com.example.bd2021bookdex.database.entities.BookEntity;
 import com.example.bd2021bookdex.database.entities.TagEntity;
-import com.example.bd2021bookdex.database.entities.UserEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.color.ColorSpace;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.io.File;
@@ -21,30 +27,39 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
+@Component
+@Scope("prototype")
 public class BookDisplayLabel extends JPanel {
     private static final int GBC_I = 3;
     private static ImageIcon unknownIcon = null;
 
     static {
         try {
-            unknownIcon = new ImageIcon(resize(ImageIO.read(new File("placeHolder.png")),100,100));
+            unknownIcon = new ImageIcon(resize(ImageIO.read(new File("placeHolder.png")),75,100));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    @Autowired
+    private ApplicationContext context;
+    @Autowired
+    private MainWindow owner;
+    @Autowired
+    private DatabaseSearcher searcher;
+    @Autowired
+    private DatabaseModifier modifier;
     private BookStatusEntity book;
-    private JLabel titleLabel = new JLabel();
-    private JLabel authorLabel = new JLabel();
-    private JLabel picture = new JLabel();
-    private java.util.List<JLabel> tags = new LinkedList<>();
-    private JTextArea desc = new JTextArea();
-    private JScrollPane scroll;
-    private JLabel pageCount = new JLabel();
-    private JLabel category = new JLabel();
-    private JLabel genre = new JLabel();
+    private final JLabel titleLabel = new JLabel();
+    private final JLabel authorLabel = new JLabel();
+    private final JLabel picture = new JLabel();
+    private final java.util.List<JLabel> tags = new LinkedList<>();
+    private final JTextArea desc = new JTextArea();
+    private final JScrollPane scroll;
+    private final JLabel pageCount = new JLabel();
+    private final JLabel category = new JLabel();
+    private final JLabel genre = new JLabel();
     private CompletableFuture<BufferedImage> loader = null;
     
     public BookDisplayLabel(BookStatusEntity src, int x, int y) {
@@ -79,8 +94,8 @@ public class BookDisplayLabel extends JPanel {
         scroll = new JScrollPane(desc);
         scroll.getVerticalScrollBar().setUI(new ScrollBarUI(Color.white));
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        scroll.setMinimumSize(new Dimension(x / 5*3, y*2/5));
-        scroll.setPreferredSize(new Dimension(x / 5*3, y*2/5));
+        scroll.setMinimumSize(new Dimension(x / 2, y*2/5));
+        scroll.setPreferredSize(new Dimension(x / 2, y*2/5));
         scroll.setBorder(null);
         add(scroll, gbc);
         
@@ -89,36 +104,77 @@ public class BookDisplayLabel extends JPanel {
         gbc.gridwidth = 1;
         gbc.gridheight = 1;
         add(pageCount, gbc);
+        pageCount.setMinimumSize(new Dimension(75,20));
+        pageCount.setPreferredSize(new Dimension(75,20));
+        pageCount.setMaximumSize(new Dimension(75,20));
         
         gbc.gridx = 2;
         add(category, gbc);
+        category.setMinimumSize(new Dimension(75,20));
+        category.setPreferredSize(new Dimension(75,20));
+        category.setMaximumSize(new Dimension(75,20));
         
         gbc.gridx = 3;
         add(genre, gbc);
+        genre.setMinimumSize(new Dimension(75,20));
+        genre.setPreferredSize(new Dimension(75,20));
+        genre.setMaximumSize(new Dimension(75,20));
         
         setValues();
-        if (book.isOwned()) {
-            this.setBackground(new Color(255, 223, 0));
-        }
-        else {
-            this.setBackground(Color.white);
-        }
+        
+        addButtons();
+    }
+    
+    private void addButtons() {
+
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridx = 4;
+        gbc.gridy = 0;
+        gbc.gridheight = 2;
+        MyButton toAdd = new MyButton("Change status");
+        add(toAdd, gbc);
+        toAdd.addActionListener(actionEvent -> {
+            var dialog = context.getBean(ManageStatusWindow.class,this, book, owner, searcher, modifier);
+        });
+        toAdd.setFont(toAdd.getFont().deriveFont(9.55f));
+
+        gbc.gridy = 2;
+
+        toAdd = new MyButton("Tags & Genre");
+        add(toAdd, gbc);
+        toAdd.addActionListener(actionEvent -> {
+            var dialog = context.getBean(ManageDetailsWindow.class,this, book.getBook(), owner, searcher, modifier);
+        });
+        toAdd.setFont(toAdd.getFont().deriveFont(9.55f));
+
+        gbc.gridy = 4;
+
+        toAdd = new MyButton("Collections");
+        add(toAdd, gbc);
+        toAdd.addActionListener(actionEvent -> {
+            var dialog = context.getBean(ManageCollectionWindow.class,book, owner, searcher, modifier);
+        });
+        toAdd.setFont(toAdd.getFont().deriveFont(9.55f));
     }
     private void setValues() {
+        
         if (book.getStatus() == BookStatusEnum.READ) {
             desc.setBackground(new Color(255,223,0));
             scroll.getVerticalScrollBar().setUI(new ScrollBarUI(new Color(255, 223, 0)));
         }
-        if (book.isAtLeastAdded())
-            titleLabel.setText(book.getBook().getTitle());
-        else
-            titleLabel.setText(book.getBook().getTitle().replaceAll("\\S", "?"));
+        String toAdd = book.getTitle();
+
+        if (toAdd.length() > 40) {
+            toAdd = toAdd.substring(0,37) + "...";
+        }
+        titleLabel.setText(toAdd);
         Set<AuthorEntity> authors = book.getBook().getAuthors();
         StringBuilder names = new StringBuilder();
         for (AuthorEntity a : authors) {
           
             if (authorLabel.getFontMetrics(authorLabel.getFont()).stringWidth(names.toString()) +
-                    authorLabel.getFontMetrics(authorLabel.getFont()).stringWidth(a.getName()) > this.getPreferredSize().width) {
+                    authorLabel.getFontMetrics(authorLabel.getFont()).stringWidth(a.getName()) > this.getPreferredSize().width /3 * 2) {
                 names.append(".....");
                 break;
             }
@@ -153,8 +209,13 @@ public class BookDisplayLabel extends JPanel {
         }
         if (book.getBook().getDesc() != null)
             desc.setText(book.getBook().getDesc());
-        if (book.getBook().getCategory() != null)
-            category.setText(book.getBook().getCategory());
+        if (book.getBook().getCategory() != null) {
+            toAdd = book.getBook().getCategory();
+            if (toAdd.length() > 15) {
+                toAdd = toAdd.substring(0,13) + "...";
+            }
+            category.setText(toAdd);
+        }
         if (book.getBook().getGenre() != null)
             genre.setText(book.getBook().getGenre());
         if (book.getBook().getCount() != 0) {
@@ -168,6 +229,9 @@ public class BookDisplayLabel extends JPanel {
             if (book.getStatus() == BookStatusEnum.READ)
                 temp.setBackground(new Color(255,223,0));
             tags.add(temp);
+            temp.setMinimumSize(new Dimension(75,20));
+            temp.setPreferredSize(new Dimension(75,20));
+            temp.setMaximumSize(new Dimension(75,20));
         }
         int i = 0;
 
@@ -177,12 +241,26 @@ public class BookDisplayLabel extends JPanel {
             gbc.gridx = i++;
             add(l, gbc);
         }
-        
+        if (book.isOwned()) {
+            this.setBackground(new Color(255, 223, 0));
+        }
+        else {
+            this.setBackground(Color.white);
+        }
     }
     public BookStatusEntity getBook() {
         return book;
     }
 
+    public void update() {
+        book = searcher.getUpdatedStatus(book);
+        for (var label : tags) {
+            remove(label);
+        }
+        tags.clear();
+        setValues();
+        this.repaint();
+    }
     @Override
     protected void paintComponent(Graphics g) {
         if (loader != null && loader.isDone()) {
@@ -190,9 +268,9 @@ public class BookDisplayLabel extends JPanel {
             try {
                 image = loader.get();
             if (book.getStatus() == BookStatusEnum.ADDED)
-                picture.setIcon(new ImageIcon(dye(resize(image,50,100))));
+                picture.setIcon(new ImageIcon(dye(resize(image,75,100))));
             else
-                picture.setIcon(new ImageIcon(resize(image,50,100)));
+                picture.setIcon(new ImageIcon(resize(image,75,100)));
 
             } catch (Exception e) {
                 try {

@@ -2,10 +2,15 @@ package com.example.bd2021bookdex.database.entities.bookstatusentity;
 
 import com.example.bd2021bookdex.database.entities.BookCollectionEntity;
 import com.example.bd2021bookdex.database.entities.BookEntity;
+import com.example.bd2021bookdex.database.entities.TagEntity;
 import com.example.bd2021bookdex.database.entities.UserEntity;
 
 import javax.persistence.*;
+import javax.swing.*;
 import java.io.Serializable;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -83,5 +88,66 @@ public class BookStatusEntity implements Serializable {
     }
     public BookStatusEnum getStatus() {
         return status;
+    }
+
+    public UserEntity getUser() {
+        return owner;
+    }
+
+    public Date getDate() {
+        return lastStatusChange;
+    }
+
+    public BookStatusKey getId() {
+        return id;
+    }
+
+    public Set<BookCollectionEntity> getCollection() {
+        return collections;
+    }
+
+    public void setCollections(DefaultListModel<BookCollectionEntity> added) {
+        collections = new HashSet<>();
+        for (var coll: added.toArray()) {
+            collections.add((BookCollectionEntity) coll);
+        }
+    }
+    
+    public String getTitle() {
+        if (status != BookStatusEnum.FOUND) {
+            return book.getTitle();
+        }
+        else {
+            return book.getTitle().replaceAll("\\S", "?");
+        }
+    }
+
+    public void increaseStatus() {
+        switch (status) {
+            case FOUND:
+                status = BookStatusEnum.ADDED;
+                break;
+            case ADDED:
+                status = BookStatusEnum.IN_PROGRESS;
+                break;
+            case IN_PROGRESS:
+                status = BookStatusEnum.READ;
+                break;
+            case READ:
+        }
+        lastStatusChange = java.sql.Date.valueOf(LocalDate.now());
+    }
+
+    public void changeOwned() {
+        isOwned = !isOwned;
+        if (status == BookStatusEnum.FOUND) 
+            status = BookStatusEnum.ADDED;
+    }
+
+    public void decreaseStatus() {
+        if (status != BookStatusEnum.ADDED)
+            return;
+        status = BookStatusEnum.FOUND;
+        lastStatusChange = java.sql.Date.valueOf(LocalDate.now());
     }
 }

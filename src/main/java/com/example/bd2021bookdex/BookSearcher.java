@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 
@@ -23,16 +24,24 @@ public class BookSearcher {
         user = s;
     }
     public void addAuthor(String name) {
+        if (Objects.equals(name, ""))
+            return;
         List<String > x = List.of(name.split("\\s+"));
         authors.addAll(x);
     }
     public void addCategories(String name) {
+        if (Objects.equals(name, ""))
+            return;
         categories.addAll(List.of(name.split("\\s+")));
     }
     public void addTitles(String name) {
+        if (Objects.equals(name, ""))
+            return;
         titles.addAll(List.of(name.split("\\s+")));
     }
     public void addGenres(String name) {
+        if (Objects.equals(name, ""))
+            return;
         genres.addAll(List.of(name.split("\\s+")));
     }
     public void setStatus(BookStatusEnum state) {
@@ -44,5 +53,9 @@ public class BookSearcher {
         categories.clear();
         titles.clear();
         genres.clear();
+    }
+
+    public UserEntity getUser() {
+        return user;
     }
 }

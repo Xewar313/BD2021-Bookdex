@@ -4,6 +4,8 @@ import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEn
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -21,7 +23,7 @@ public class BookCollectionEntity implements Serializable {
     @JoinColumn(name = "owner_id")
     private UserEntity owner;
     //it is unnecessary - we can get it from BookStatusEntity, but it makes it easier to get collections
-    @ManyToMany (fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "COLLECTION_OWNERSHIP",
             joinColumns = { @JoinColumn(name = "collection_id")},
@@ -33,11 +35,11 @@ public class BookCollectionEntity implements Serializable {
     private Set<BookStatusEntity> books;
     
     public BookCollectionEntity(){}
-    public BookCollectionEntity(String name, String desc, UserEntity owner, Set<BookStatusEntity> books){
+    public BookCollectionEntity(String name, String desc, UserEntity owner){
         this.name = name;
         this.desc = desc;
         this.owner =owner;
-        this.books = books;
+        this.books = new HashSet<>();
     }
 
     public Set<BookStatusEntity> getBooks() {
@@ -54,5 +56,23 @@ public class BookCollectionEntity implements Serializable {
 
     public String getDesc() {
         return desc;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BookCollectionEntity that = (BookCollectionEntity) o;
+        return id == that.id;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

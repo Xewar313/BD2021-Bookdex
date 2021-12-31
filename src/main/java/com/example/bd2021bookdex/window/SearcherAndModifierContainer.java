@@ -6,18 +6,16 @@ import javax.swing.*;
 import java.awt.*;
 
 @org.springframework.stereotype.Component
-public class SearcherAndModifierContainers extends JPanel {
+public class SearcherAndModifierContainer extends JPanel {
     BookSearcherPanel bookSearcher;
     CollectionSearcherPanel collectionSearcher;
     CreatorPanel creator;
-    SelectedList target;
     
     @Autowired
-    public SearcherAndModifierContainers(SelectedList target, BookSearcherPanel book, CollectionSearcherPanel collection, CreatorPanel creat) {
+    public SearcherAndModifierContainer(BookSearcherPanel book, CollectionSearcherPanel collection, CreatorPanel creat) {
         bookSearcher = book;
         collectionSearcher = collection;
         creator = creat;
-        this.target = target;
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension thisSize = new Dimension(screen.width/6,screen.height/2);
         this.setMinimumSize(thisSize);
@@ -29,20 +27,56 @@ public class SearcherAndModifierContainers extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         MyButton first = new MyButton("Books");
+        first.addActionListener(actionEvent -> {
+            bookSearcher.update();
+            bookSearcher.setVisible(true);
+            collectionSearcher.setVisible(false);
+            creator.setVisible(false);
+        });
         prepButton(first, buttonSize);
         add(first,gbc);
         
         gbc.gridx = 1;
         gbc.gridy = 0;
         MyButton second = new MyButton("Collections");
+        second.addActionListener(actionEvent -> {
+            bookSearcher.setVisible(false);
+            collectionSearcher.setVisible(true);
+            creator.setVisible(false);
+        });
         prepButton(second, buttonSize);
         add(second,gbc);
         
         gbc.gridx = 2;
         gbc.gridy = 0;
         MyButton third = new MyButton("Create");
+        third.addActionListener(actionEvent -> {
+            bookSearcher.setVisible(false);
+            collectionSearcher.setVisible(false);
+            creator.setVisible(true);
+        });
         prepButton(third, buttonSize);
         add(third,gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        bookSearcher.setVisible(true);
+        collectionSearcher.setVisible(false);
+        creator.setVisible(false);
+        
+        Dimension panelSize = new Dimension(thisSize.width, thisSize.height - buttonSize.height);
+        bookSearcher.setPreferredSize(panelSize);
+        collectionSearcher.setPreferredSize(panelSize);
+        creator.setPreferredSize(panelSize);
+        
+        bookSearcher.setSizes(thisSize.width);
+        collectionSearcher.setSizes(thisSize.width);
+        creator.setSizes(thisSize.width);
+        
+        add(bookSearcher, gbc);
+        add(collectionSearcher, gbc);
+        add(creator, gbc);
         
     }
     
@@ -54,7 +88,7 @@ public class SearcherAndModifierContainers extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.GREEN);
+        g.setColor(Color.GRAY);
         g.fillRect(0,0,this.getWidth(),this.getHeight());
     }
 }

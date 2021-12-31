@@ -1,10 +1,16 @@
 package com.example.bd2021bookdex.window;
 
+import com.example.bd2021bookdex.database.entities.ChangesEntity;
 import com.example.bd2021bookdex.database.entities.UserEntity;
+import org.hibernate.mapping.Collection;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Vector;
 
 @Component
 public class RecentChangesList extends JPanel implements Scrollable {
@@ -44,7 +50,9 @@ public class RecentChangesList extends JPanel implements Scrollable {
 
     public void setUser(UserEntity user) {
         removeAll();
-        for (var change : user.getChanges()) {
+        Vector<ChangesEntity> toSort = new Vector<>(user.getChanges()); 
+        Collections.sort(toSort);
+        for (var change : toSort) {
             add(new RecentChangesLabel(change,thisSize.width,thisSize.height / howManyRows));
         }
     }

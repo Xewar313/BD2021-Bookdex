@@ -15,6 +15,7 @@ import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
 @Component
@@ -22,7 +23,7 @@ public class DatabaseSearcher extends BookSearcher {
 
     private final List<TagEntity> tags = new LinkedList<>();
 
-    private Vector<String> collectionName = new Vector<>();
+    private final Vector<String> collectionName = new Vector<>();
     
     protected final SessionFactory factory;
     @Autowired
@@ -32,6 +33,8 @@ public class DatabaseSearcher extends BookSearcher {
     }
     
     public void addCollName(String name) {
+        if (Objects.equals(name, ""))
+            return;
         collectionName.addAll(List.of(name.split("\\s+")));
     }
     public void addTag(TagEntity tag) {
@@ -63,19 +66,20 @@ public class DatabaseSearcher extends BookSearcher {
             if (status != null) {
                 predicates.add(cb.equal(root.get("status"), status));
             }
+
             if (!tags.isEmpty()) {
                 Join<BookEntity, TagEntity> tagJoin = bookJoin.join("tags");
                 List<Predicate> tempList = new LinkedList<>();
                 for (TagEntity t: tags)
-                    tempList.add(cb.like(tagJoin.get("id"), "" + t.getId()));
-                predicates.add(cb.and(tempList.toArray(new Predicate[]{})));
+                    tempList.add(cb.equal(tagJoin.get("id"), t.getId())); 
+                predicates.add(cb.or(tempList.toArray(new Predicate[]{})));
             }
             if (!authors.isEmpty()) {
                 Join<BookEntity, AuthorEntity> authorsJoin = bookJoin.join("authors");
                 List<Predicate> tempList = new LinkedList<>();
                 for (String author: authors)
                     tempList.add(cb.like(authorsJoin.get("name"), '%' + author + '%'));
-                predicates.add(cb.and(tempList.toArray(new Predicate[]{})));
+                predicates.add(cb.or(tempList.toArray(new Predicate[]{})));
             }
            
             for (String title: titles)
@@ -84,20 +88,18 @@ public class DatabaseSearcher extends BookSearcher {
                 List<Predicate> tempList = new LinkedList<>();
                 for (String category: categories)
                     tempList.add(cb.like(bookJoin.get("category"), '%' + category + '%'));
-                predicates.add(cb.or(cb.and(tempList.toArray(new Predicate[]{})), cb.isNull(bookJoin.get("category"))));
+                predicates.add(cb.and(tempList.toArray(new Predicate[]{})));
             }
             if (!genres.isEmpty()) {
                 List<Predicate> tempList = new LinkedList<>();
                 for (String genre: genres)
                     tempList.add(cb.like(bookJoin.get("genre"), '%' + genre + '%'));
-                predicates.add(cb.or(cb.and(tempList.toArray(new Predicate[]{})), cb.isNull(bookJoin.get("genre"))));
+                predicates.add(cb.and(tempList.toArray(new Predicate[]{})));
             }
+            
             query.where(cb.and(predicates.toArray(new Predicate[] {})));
             Query<BookStatusEntity> q = session.createQuery(query);
             results = q.getResultList();
-            for (var r : results) {
-                System.out.println(r.getBook().getId());
-            }
             tx.commit();
         }
         catch (Exception e) {
@@ -108,6 +110,8 @@ public class DatabaseSearcher extends BookSearcher {
     }
     
     public List<BookEntity> findBooks() {
+        if (authors.isEmpty() && tags.isEmpty() && titles.isEmpty() && genres.isEmpty())
+            return new LinkedList<>();
         Transaction tx = null;
         List<BookEntity> results = null;
         try (Session session = factory.openSession()) {
@@ -137,13 +141,13 @@ public class DatabaseSearcher extends BookSearcher {
                 List<Predicate> tempList = new LinkedList<>();
                 for (String category: categories)
                     tempList.add(cb.like(root.get("category"), '%' + category + '%'));
-                predicates.add(cb.or(cb.and(tempList.toArray(new Predicate[]{})), cb.isNull(root.get("category"))));
+                predicates.add(cb.and(tempList.toArray(new Predicate[]{})));
             }
             if (!genres.isEmpty()) {
                 List<Predicate> tempList = new LinkedList<>();
                 for (String genre: genres)
                     tempList.add(cb.like(root.get("genre"), '%' + genre + '%'));
-                predicates.add(cb.or(cb.and(tempList.toArray(new Predicate[]{})), cb.isNull(root.get("genre"))));
+                predicates.add(cb.and(tempList.toArray(new Predicate[]{})));
             }
             query.where(cb.and(predicates.toArray(new Predicate[] {})));
             Query<BookEntity> q = session.createQuery(query);
@@ -219,6 +223,26 @@ public class DatabaseSearcher extends BookSearcher {
         }
         return results;
     }
+    public BookStatusEntity getUpdatedStatus(BookStatusEntity src) {
+        Transaction tx = null;
+        BookStatusEntity result = null;
+        try (Session session = factory.openSession()) {
+            tx = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<BookStatusEntity> query = cb.createQuery(BookStatusEntity.class);
+            Root<BookStatusEntity> root = query.from(BookStatusEntity.class);
+            query.where(cb.equal(root.get("id"), src.getId()));
+
+            Query<BookStatusEntity> q = session.createQuery(query);
+            result = q.getSingleResult();
+            tx.commit();
+        }
+        catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+        return result;
+    }
     public AuthorEntity getAuthor(String name) {
         Transaction tx = null;
         AuthorEntity result = null;
@@ -261,23 +285,81 @@ public class DatabaseSearcher extends BookSearcher {
         }
         return result;
     }
-   
-    
-    public List<BookCollectionEntity> getCollections() {
+
+    public List<BookCollectionEntity> getStatusCollection(BookStatusEntity src) {
         Transaction tx = null;
-        List<BookCollectionEntity> results = null;
+        List<BookCollectionEntity> result = null;
         try (Session session = factory.openSession()) {
             tx = session.beginTransaction();
-            UserEntity temp = session.get(UserEntity.class, user.getId());
-            Hibernate.initialize(temp.getCollections());
-            results = new LinkedList<>(temp.getCollections());
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<BookStatusEntity> query = cb.createQuery(BookStatusEntity.class);
+            Root<BookStatusEntity> root = query.from(BookStatusEntity.class);
+            query.where(cb.equal(root.get("id"), src.getId()));
+            Query<BookStatusEntity> q = session.createQuery(query);
+            BookStatusEntity status = q.getSingleResult();
+            Hibernate.initialize(status.getCollection());
+            result = new LinkedList<>(status.getCollection());
             tx.commit();
-            
         }
         catch (Exception e) {
             if (tx != null) tx.rollback();
             e.printStackTrace();
         }
-        return results;
+        return result;
+    }
+    
+    public List<BookCollectionEntity> getCollections() {
+        Transaction tx = null;
+        List<BookCollectionEntity> result = null;
+        try (Session session = factory.openSession()) {
+            tx = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<BookCollectionEntity> query = cb.createQuery(BookCollectionEntity.class);
+            Root<BookCollectionEntity> root = query.from(BookCollectionEntity.class);
+            Predicate toSearch = cb.equal(root.get("owner"), user);
+            if (!collectionName.isEmpty()) {
+                List<Predicate> tempList = new LinkedList<>();
+                for (String name: collectionName)
+                    tempList.add(cb.like(root.get("name"), "%" + name + "%"));
+                toSearch = cb.and(cb.and(tempList.toArray(new Predicate[]{})), toSearch);
+            }
+            query.where(toSearch);
+            result = session.createQuery(query).list();
+            tx.commit();
+        }
+        catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<BookCollectionEntity> getInitializedCollections() {
+        Transaction tx = null;
+        List<BookCollectionEntity> result = null;
+        try (Session session = factory.openSession()) {
+            tx = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<BookCollectionEntity> query = cb.createQuery(BookCollectionEntity.class);
+            Root<BookCollectionEntity> root = query.from(BookCollectionEntity.class);
+            Predicate toSearch = cb.equal(root.get("owner"), user);
+            if (!collectionName.isEmpty()) {
+                List<Predicate> tempList = new LinkedList<>();
+                for (String name: collectionName)
+                    tempList.add(cb.like(root.get("name"), "%" + name + "%"));
+                toSearch = cb.and(cb.and(tempList.toArray(new Predicate[]{})), toSearch);
+            }
+            query.where(toSearch);
+            result = session.createQuery(query).list();
+            for (var res : result) {
+                Hibernate.initialize(res.getBooks());
+            }
+            tx.commit();
+        }
+        catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+        return result;
     }
 }
