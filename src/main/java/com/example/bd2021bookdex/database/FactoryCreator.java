@@ -1,7 +1,6 @@
 package com.example.bd2021bookdex.database;
 
-import com.example.bd2021bookdex.Department;
-import com.example.bd2021bookdex.Employee;
+
 import com.example.bd2021bookdex.database.entities.*;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEntity;
 import org.hibernate.SessionFactory;
@@ -17,8 +16,6 @@ public class FactoryCreator {
     @Bean
     public SessionFactory getSessionFactory() {
         Configuration configuration = new Configuration().configure();
-        configuration.addAnnotatedClass(Employee.class);
-        configuration.addAnnotatedClass(Department.class);
         configuration.addAnnotatedClass(BookEntity.class);
         configuration.addAnnotatedClass(AuthorEntity.class);
         configuration.addAnnotatedClass(UserEntity.class);
