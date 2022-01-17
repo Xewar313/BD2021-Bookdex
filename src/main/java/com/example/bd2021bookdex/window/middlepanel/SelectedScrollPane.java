@@ -1,7 +1,8 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.middlepanel;
 
 import com.example.bd2021bookdex.database.entities.BookCollectionEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEntity;
+import com.example.bd2021bookdex.window.ui.ScrollBarUI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,7 @@ public class SelectedScrollPane extends JScrollPane {
         this.getViewport().setBackground(Color.white);
     }
 
-    public void setBooks(List<BookStatusEntity> e) {
+    public void addBooks(List<BookStatusEntity> e) {
         list.addBooks(e);
         validate();
         repaint();

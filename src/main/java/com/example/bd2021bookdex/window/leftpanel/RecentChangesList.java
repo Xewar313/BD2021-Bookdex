@@ -1,14 +1,12 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.leftpanel;
 
 import com.example.bd2021bookdex.database.entities.ChangesEntity;
 import com.example.bd2021bookdex.database.entities.UserEntity;
-import org.hibernate.mapping.Collection;
+import com.example.bd2021bookdex.window.leftpanel.RecentChangesLabel;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
 

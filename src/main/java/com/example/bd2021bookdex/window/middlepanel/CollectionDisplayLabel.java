@@ -1,6 +1,7 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.middlepanel;
 
 import com.example.bd2021bookdex.database.entities.BookCollectionEntity;
+import com.example.bd2021bookdex.window.ui.ScrollBarUI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -30,11 +31,11 @@ public class CollectionDisplayLabel extends JPanel {
         setBorder(new LineBorder(Color.black, 1));
 
         JLabel nameLabel = new JLabel();
-        add(nameLabel, createGbc(0,0));
+        add(nameLabel, createGbc(0));
         nameLabel.setText(src.getName());
 
         JLabel booksLabel = new JLabel();
-        add(booksLabel, createGbc(0,1));
+        add(booksLabel, createGbc(1));
         StringBuilder books = new StringBuilder();
         for (var book : collection.getBooks()) {
             if (booksLabel.getFontMetrics(booksLabel.getFont()).stringWidth(books.toString()) +
@@ -63,10 +64,10 @@ public class CollectionDisplayLabel extends JPanel {
         desc.setMaximumSize(new Dimension(x/4*3,y/2));
         desc.setLineWrap(true);
         desc.setText(collection.getDesc());
-        add(scroll, createGbc(0,2));
+        add(scroll, createGbc(2));
 
         JLabel bookCount = new JLabel();
-        add(bookCount, createGbc(0,4));
+        add(bookCount, createGbc(4));
         bookCount.setText("Number of books: " + collection.getBooks().size());
         addMouseListener(new MouseListener() {
             @Override
@@ -76,7 +77,7 @@ public class CollectionDisplayLabel extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                toAdd.setBooks(new LinkedList<>(collection.getBooks()));
+                toAdd.addBooks(new LinkedList<>(collection.getBooks()));
             }
 
             @Override
@@ -96,12 +97,12 @@ public class CollectionDisplayLabel extends JPanel {
         });
     }
    
-    private GridBagConstraints createGbc(int x, int y) {
+    private GridBagConstraints createGbc(int y) {
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = x;
+        gbc.gridx = 0;
         gbc.gridy = y;
         gbc.insets = new Insets(GBC_I, GBC_I, GBC_I, GBC_I);
-        gbc.insets.left = x != 0 ? 3 * GBC_I : GBC_I;
+        gbc.insets.left = GBC_I;
         gbc.weightx = 0.0;
         gbc.weighty = 0.0;
         return gbc;

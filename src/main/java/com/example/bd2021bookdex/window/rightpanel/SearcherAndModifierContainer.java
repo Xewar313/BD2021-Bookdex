@@ -1,5 +1,6 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.rightpanel;
 
+import com.example.bd2021bookdex.window.ui.MyButton;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;

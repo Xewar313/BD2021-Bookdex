@@ -1,12 +1,17 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.middlepanel;
 
 import com.example.bd2021bookdex.database.DatabaseModifier;
 import com.example.bd2021bookdex.database.DatabaseSearcher;
 import com.example.bd2021bookdex.database.entities.AuthorEntity;
-import com.example.bd2021bookdex.database.entities.BookEntity;
 import com.example.bd2021bookdex.database.entities.TagEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEnum;
+import com.example.bd2021bookdex.window.*;
+import com.example.bd2021bookdex.window.middlepanel.popup.ManageCollectionWindow;
+import com.example.bd2021bookdex.window.middlepanel.popup.ManageDetailsWindow;
+import com.example.bd2021bookdex.window.middlepanel.popup.ManageStatusWindow;
+import com.example.bd2021bookdex.window.ui.MyButton;
+import com.example.bd2021bookdex.window.ui.ScrollBarUI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -17,8 +22,6 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.color.ColorSpace;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.io.File;
@@ -104,9 +107,9 @@ public class BookDisplayLabel extends JPanel {
         gbc.gridwidth = 1;
         gbc.gridheight = 1;
         add(pageCount, gbc);
-        pageCount.setMinimumSize(new Dimension(75,20));
-        pageCount.setPreferredSize(new Dimension(75,20));
-        pageCount.setMaximumSize(new Dimension(75,20));
+        pageCount.setMinimumSize(new Dimension(100,20));
+        pageCount.setPreferredSize(new Dimension(100,20));
+        pageCount.setMaximumSize(new Dimension(100,20));
         
         gbc.gridx = 2;
         add(category, gbc);
@@ -135,7 +138,7 @@ public class BookDisplayLabel extends JPanel {
         MyButton toAdd = new MyButton("Change status");
         add(toAdd, gbc);
         toAdd.addActionListener(actionEvent -> {
-            var dialog = context.getBean(ManageStatusWindow.class,this, book, owner, searcher, modifier);
+            var dialog = context.getBean(ManageStatusWindow.class,this, book, owner, modifier);
         });
         toAdd.setFont(toAdd.getFont().deriveFont(9.55f));
 
@@ -259,6 +262,7 @@ public class BookDisplayLabel extends JPanel {
         }
         tags.clear();
         setValues();
+        this.revalidate();
         this.repaint();
     }
     @Override

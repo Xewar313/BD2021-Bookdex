@@ -1,5 +1,9 @@
 package com.example.bd2021bookdex.window;
 
+import com.example.bd2021bookdex.window.leftpanel.LeftContainer;
+import com.example.bd2021bookdex.window.middlepanel.BookDisplayLabel;
+import com.example.bd2021bookdex.window.middlepanel.SelectedScrollPane;
+import com.example.bd2021bookdex.window.rightpanel.SearcherAndModifierContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -8,11 +12,10 @@ import java.awt.*;
 
 @Component
 public class MainWindow extends JFrame {
-
-
-    SelectedScrollPane selected;
+    
+    private final SelectedScrollPane selected;
     @Autowired
-    public MainWindow(LeftPanel list, SelectedScrollPane selected, SearcherAndModifierContainer search) {
+    public MainWindow(LeftContainer list, SelectedScrollPane selected, SearcherAndModifierContainer search) {
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setResizable(false);

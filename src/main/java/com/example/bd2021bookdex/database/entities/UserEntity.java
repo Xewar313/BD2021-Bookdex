@@ -4,6 +4,7 @@ import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEn
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -41,6 +42,19 @@ public class UserEntity implements Serializable {
         return changes;
     }
     public  Set<BookCollectionEntity> getCollections() { return collections;}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserEntity that = (UserEntity) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {

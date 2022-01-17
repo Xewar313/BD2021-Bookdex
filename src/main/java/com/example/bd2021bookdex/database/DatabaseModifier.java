@@ -41,8 +41,6 @@ public class DatabaseModifier {
             var results = q.getResultList();
             
             for (var res : results) {
-                var x = res.getDate().toLocalDate();
-                var y = ZonedDateTime.now().minusWeeks(1).toLocalDate();
                 if (res.getDate().toLocalDate().compareTo(ZonedDateTime.now().minusWeeks(1).toLocalDate()) < 0) {
                     session.delete(res);
                 }
@@ -68,9 +66,6 @@ public class DatabaseModifier {
             var results = q.getResultList();
 
             for (var res : results) {
-                var x = res.getDate().toLocalDate();
-                var y = ZonedDateTime.now().minusWeeks(1).toLocalDate();
-                
                 if (res.getDate().toLocalDate().compareTo(ZonedDateTime.now().minusWeeks(3).toLocalDate()) < 0 &&
                         res.getStatus() == BookStatusEnum.FOUND)
                     session.delete(res);
@@ -101,6 +96,7 @@ public class DatabaseModifier {
         }
         return true;
     }
+    
     public void updateInDb(Object d) {
         Transaction tx = null;
         try (Session session = factory.openSession()) {
@@ -111,10 +107,10 @@ public class DatabaseModifier {
             if (tx != null) tx.rollback();
         }
     }
+    
     public void deleteFromDb(Object obj) {
         Transaction tx = null;
         try (Session session = factory.openSession()) {
-
             tx = session.beginTransaction();
             session.delete(obj);
             tx.commit();
@@ -123,6 +119,7 @@ public class DatabaseModifier {
             e.printStackTrace();
         }
     }
+    
     public boolean deleteFromDb(UserEntity user) {
         Transaction tx = null;
         try (Session session = factory.openSession()) {
@@ -143,6 +140,7 @@ public class DatabaseModifier {
         }
         return true;
     }
+    
     public BookStatusEntity tryAddingConnection(BookEntity book, UserEntity user) {
         BookStatusEntity toAdd = new BookStatusEntity(BookStatusEnum.FOUND,
                 false, 

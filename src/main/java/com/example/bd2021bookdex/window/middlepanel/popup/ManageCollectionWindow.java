@@ -1,17 +1,17 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.middlepanel.popup;
 
 import com.example.bd2021bookdex.database.DatabaseModifier;
 import com.example.bd2021bookdex.database.DatabaseSearcher;
 import com.example.bd2021bookdex.database.entities.BookCollectionEntity;
-import com.example.bd2021bookdex.database.entities.BookEntity;
-import com.example.bd2021bookdex.database.entities.TagEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEntity;
+import com.example.bd2021bookdex.window.MainWindow;
+import com.example.bd2021bookdex.window.ui.MyButton;
+import com.example.bd2021bookdex.window.ui.ScrollBarUI;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -20,7 +20,7 @@ public class ManageCollectionWindow extends JDialog {
     public ManageCollectionWindow(BookStatusEntity toManage, MainWindow owner, DatabaseSearcher searcher, DatabaseModifier modifier) {
         super(owner, "Change collections");
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setSize(new Dimension(screen.width/5, screen.height/3));
+        this.setSize(new Dimension(screen.width/5, screen.height/4));
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -48,7 +48,7 @@ public class ManageCollectionWindow extends JDialog {
 
         gbc.gridx = 1;
         searcher.reset();
-        java.util.List<BookCollectionEntity> tagEntitiesToRemove = searcher.getCollections();
+        java.util.List<BookCollectionEntity> tagEntitiesToRemove = searcher.getCollections(false);
         tagEntitiesToRemove.removeAll(List.of(collections));
         DefaultListModel<BookCollectionEntity> restCollections = prepareListModel(tagEntitiesToRemove.toArray(new BookCollectionEntity[]{}));
         JList<BookCollectionEntity> restCollectionsList = prepareList(restCollections);

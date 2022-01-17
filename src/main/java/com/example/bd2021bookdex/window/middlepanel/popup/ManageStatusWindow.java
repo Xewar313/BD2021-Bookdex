@@ -1,4 +1,4 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.middlepanel.popup;
 
 import com.example.bd2021bookdex.database.DatabaseModifier;
 import com.example.bd2021bookdex.database.DatabaseSearcher;
@@ -7,22 +7,20 @@ import com.example.bd2021bookdex.database.entities.ChangesEntity;
 import com.example.bd2021bookdex.database.entities.TagEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEnum;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.bd2021bookdex.window.MainWindow;
+import com.example.bd2021bookdex.window.ui.MyButton;
+import com.example.bd2021bookdex.window.middlepanel.BookDisplayLabel;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 @Scope("prototype")
 public class ManageStatusWindow extends JDialog {
     JLabel status;
-    public ManageStatusWindow (BookDisplayLabel creator, BookStatusEntity toManage, MainWindow owner, DatabaseSearcher searcher, DatabaseModifier modifier) {
+    public ManageStatusWindow (BookDisplayLabel creator, BookStatusEntity toManage, MainWindow owner, DatabaseModifier modifier) {
         super(owner, "Change status or remove");
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         this.setSize(new Dimension(screen.width/5, screen.height/3));
@@ -53,11 +51,13 @@ public class ManageStatusWindow extends JDialog {
                     toAdd.setVisible(false);
             });
         }
-        
+        gbc.insets = new Insets(30,2,2,2);
         gbc.gridy = 3;
         temp = new JLabel("Do you own that book:");
         temp.setFont(temp.getFont().deriveFont(16f));
         add(temp, gbc);
+        
+        gbc.insets = new Insets(2,2,2,2);
         gbc.gridy = 4;
         JLabel owned;
         if (toManage.isOwned()) {
@@ -83,12 +83,14 @@ public class ManageStatusWindow extends JDialog {
             }
         });
 
+        gbc.insets = new Insets(30,2,2,2);
         gbc.gridy = 6;
         temp = new JLabel("Remove book:");
         temp.setFont(temp.getFont().deriveFont(16f));
         add(temp, gbc);
 
         gbc.gridy = 7;
+        gbc.insets = new Insets(2,2,2,2);
         toAdd = new MyButton("Remove");
         add(toAdd, gbc);
         toAdd.addActionListener(actionEvent -> {

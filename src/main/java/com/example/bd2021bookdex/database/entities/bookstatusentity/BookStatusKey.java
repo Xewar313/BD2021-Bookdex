@@ -6,6 +6,7 @@ import java.util.Objects;
 
 @Embeddable
 public class BookStatusKey implements Serializable {
+    
     private int bookId;
     private int ownerId;
     BookStatusKey(int bid, int oid) {

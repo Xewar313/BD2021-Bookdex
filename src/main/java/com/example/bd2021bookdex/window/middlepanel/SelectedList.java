@@ -1,4 +1,4 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.middlepanel;
 
 import com.example.bd2021bookdex.database.entities.BookCollectionEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEntity;
@@ -15,6 +15,7 @@ public class SelectedList extends JPanel implements Scrollable {
     private static final int howManyRows = 3;
     @Autowired
     private ApplicationContext appContext;
+    
     public SelectedList() {
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         thisSize = new Dimension(screen.width/4,screen.height/2);
@@ -23,8 +24,6 @@ public class SelectedList extends JPanel implements Scrollable {
     
     @Override
     public void paintComponent(Graphics g) {
-
-        //super.paintComponents(g);
     }
     public void addBooks(java.util.List<BookStatusEntity> books) {
 

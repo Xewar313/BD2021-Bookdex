@@ -1,8 +1,10 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.leftpanel;
 
 import com.example.bd2021bookdex.apiconnection.ApiSearcher;
 import com.example.bd2021bookdex.database.DatabaseSearcher;
 import com.example.bd2021bookdex.database.entities.UserEntity;
+import com.example.bd2021bookdex.window.ui.ScrollBarUI;
+import com.example.bd2021bookdex.window.middlepanel.SelectedScrollPane;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -10,7 +12,7 @@ import java.awt.*;
 import java.util.Objects;
 
 @org.springframework.stereotype.Component
-public class LeftPanel extends JPanel {
+public class LeftContainer extends JPanel {
 
 
     ApiSearcher Asearcher;
@@ -21,7 +23,7 @@ public class LeftPanel extends JPanel {
     JScrollPane changesScroll;
     
     @Autowired
-    public LeftPanel(RecentChangesList src, SelectedScrollPane list, ApiSearcher ASE, DatabaseSearcher SE) {
+    public LeftContainer(RecentChangesList src, SelectedScrollPane list, ApiSearcher ASE, DatabaseSearcher SE) {
         DBsearcher = SE;
         Asearcher = ASE;
         this.list = list;
@@ -46,6 +48,7 @@ public class LeftPanel extends JPanel {
         for (var u : SE.getUserList())
             users.addItem(u);
         add(users);
+        setVerticalBar();
         users.setSelectedItem(users.getItemAt(0));
         users.setBackground(Color.white);
         users.addActionListener(actionEvent -> setUser());
@@ -53,7 +56,17 @@ public class LeftPanel extends JPanel {
         users.setMaximumSize(new Dimension(thisSize.width/6 * 5, 30));
         setUser();
     }
-    
+
+    private void setVerticalBar() {
+        Object comp = users.getUI().getAccessibleChild(users, 0);
+
+        if (comp instanceof JPopupMenu) {
+            JPopupMenu popup = (JPopupMenu) comp;
+            JScrollPane scrollPane = (JScrollPane) popup.getComponent(0);
+            scrollPane.getVerticalScrollBar().setUI(new ScrollBarUI(Color.white));
+        }
+    }
+
     public void updateUsers() {
         var prevUser = users.getSelectedItem();
         try {

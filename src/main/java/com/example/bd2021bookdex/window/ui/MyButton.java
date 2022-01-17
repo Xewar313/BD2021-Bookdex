@@ -1,16 +1,12 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.ui;
 
 import javax.swing.*;
 import java.awt.*;
 
-class MyButton extends JButton {
+public class MyButton extends JButton {
 
     private Color hoverBackgroundColor;
     private Color pressedBackgroundColor;
-
-    public MyButton() {
-        this(null);
-    }
 
     public MyButton(String text) {
         super(text);
@@ -39,16 +35,8 @@ class MyButton extends JButton {
     public void setContentAreaFilled(boolean b) {
     }
 
-    public Color getHoverBackgroundColor() {
-        return hoverBackgroundColor;
-    }
-
     public void setHoverBackgroundColor(Color hoverBackgroundColor) {
         this.hoverBackgroundColor = hoverBackgroundColor;
-    }
-
-    public Color getPressedBackgroundColor() {
-        return pressedBackgroundColor;
     }
 
     public void setPressedBackgroundColor(Color pressedBackgroundColor) {

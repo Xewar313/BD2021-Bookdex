@@ -1,17 +1,18 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.middlepanel.popup;
 
 import com.example.bd2021bookdex.database.DatabaseModifier;
 import com.example.bd2021bookdex.database.DatabaseSearcher;
 import com.example.bd2021bookdex.database.entities.BookEntity;
 import com.example.bd2021bookdex.database.entities.TagEntity;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.bd2021bookdex.window.MainWindow;
+import com.example.bd2021bookdex.window.ui.MyButton;
+import com.example.bd2021bookdex.window.ui.ScrollBarUI;
+import com.example.bd2021bookdex.window.middlepanel.BookDisplayLabel;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.List;
 

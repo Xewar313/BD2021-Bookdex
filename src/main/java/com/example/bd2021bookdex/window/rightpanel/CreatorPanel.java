@@ -1,8 +1,10 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.rightpanel;
 
 import com.example.bd2021bookdex.database.DatabaseModifier;
 import com.example.bd2021bookdex.database.entities.TagEntity;
 import com.example.bd2021bookdex.database.entities.UserEntity;
+import com.example.bd2021bookdex.window.leftpanel.LeftContainer;
+import com.example.bd2021bookdex.window.ui.MyButton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,33 +18,52 @@ public class CreatorPanel extends JPanel {
     JTextArea tagName = new JTextArea();
     JTextArea username = new JTextArea();
     JPasswordField userPassword = new JPasswordField();
-    LeftPanel toUpdate;
+    LeftContainer toUpdate;
     @Autowired
-    public CreatorPanel(DatabaseModifier modifier, LeftPanel toUpdate) {
+    public CreatorPanel(DatabaseModifier modifier, LeftContainer toUpdate) {
         this.toUpdate = toUpdate;
         this.modifer = modifier;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(Box.createRigidArea(new Dimension(0,8)));
+        
         setLabel("Create tag:",true);
+        
         add(Box.createRigidArea(new Dimension(0,8)));
+        
         setLabel("Name:", false);
+        
         add(Box.createRigidArea(new Dimension(0,4)));
+        
         add(tagName);
+        
         add(Box.createRigidArea(new Dimension(0,25)));
+        
         MyButton createButton = new MyButton("Create");
         createButton.addActionListener(actionEvent -> createTag());
         prepareButton(createButton);
+        
         add(Box.createRigidArea(new Dimension(0,30)));
+        
         setLabel("Create user", true);
+        
         add(Box.createRigidArea(new Dimension(0,8)));
+        
         setLabel("Username:", false);
+        
         add(Box.createRigidArea(new Dimension(0,4)));
+        
         add(username);
+        
         add(Box.createRigidArea(new Dimension(0,4)));
+        
         setLabel("Password:", false);
+        
         add(Box.createRigidArea(new Dimension(0,4)));
+        
         add(userPassword);
+        
         add(Box.createRigidArea(new Dimension(0,25)));
+        
         createButton = new MyButton("Create");
         createButton.addActionListener(actionEvent -> createUser());
         prepareButton(createButton);

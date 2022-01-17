@@ -1,4 +1,4 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.ui;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -35,17 +35,17 @@ public class ScrollBarUI extends BasicScrollBarUI {
     protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setColor(baseColor);
-        g2.fillRect(r.x,r.y, r.width, r.height);
+        g2.fillRect(r.x, r.y, r.width, r.height);
         g2.setColor(new Color(238,238,238));
-        g2.fillRoundRect(r.x + r.width/4, r.y, r.width/2, r.height, 10, 10);
+        g2.fillRoundRect(r.x + r.width / 4, r.y, r.width / 2, r.height, 10, 10);
         g2.setPaint(baseColor);
-        g2.drawRoundRect(r.x + r.width/4, r.y, r.width/2, r.height, 10, 10);
+        g2.drawRoundRect(r.x + r.width / 4, r.y, r.width / 2, r.height, 10, 10);
     }
 
     @Override
     protected void paintThumb(Graphics g, JComponent c, Rectangle r) {
         Graphics2D g2 = (Graphics2D) g.create();
-        Color color = null;
+        Color color;
         JScrollBar sb = (JScrollBar) c;
         if (!sb.isEnabled()) {
             return;
@@ -59,9 +59,9 @@ public class ScrollBarUI extends BasicScrollBarUI {
         g2.setColor(baseColor);
         g2.fillRect(r.x,r.y, r.width, r.height);
         g2.setPaint(color);
-        g2.fillRoundRect(r.x + r.width/4, r.y, r.width/2, r.height, 10, 10);
+        g2.fillRoundRect(r.x + r.width / 4, r.y, r.width / 2, r.height, 10, 10);
         g2.setPaint(new Color(238,238,238));
-        g2.drawRoundRect(r.x + r.width/4, r.y, r.width/2, r.height, 10, 10);
+        g2.drawRoundRect(r.x + r.width / 4, r.y, r.width / 2, r.height, 10, 10);
         g2.dispose();
     }
 

@@ -38,7 +38,7 @@ public class BookCollectionEntity implements Serializable {
     public BookCollectionEntity(String name, String desc, UserEntity owner){
         this.name = name;
         this.desc = desc;
-        this.owner =owner;
+        this.owner = owner;
         this.books = new HashSet<>();
     }
 

@@ -1,8 +1,10 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.rightpanel;
 
 import com.example.bd2021bookdex.database.DatabaseModifier;
 import com.example.bd2021bookdex.database.DatabaseSearcher;
 import com.example.bd2021bookdex.database.entities.BookCollectionEntity;
+import com.example.bd2021bookdex.window.ui.MyButton;
+import com.example.bd2021bookdex.window.middlepanel.SelectedScrollPane;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
@@ -21,28 +23,48 @@ public class CollectionSearcherPanel extends JPanel {
         this.modifier = modifier;
         this.searcher = searcher;
         target = targ;
+        
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(Box.createRigidArea(new Dimension(0,8)));
+        
         setLabel("Search collection:", true);
+        
         add(Box.createRigidArea(new Dimension(0,8)));
+        
         setLabel("Name:", false);
+        
         add(Box.createRigidArea(new Dimension(0,4)));
+        
         add(nameToSearch);
+        
         add(Box.createRigidArea(new Dimension(0,25)));
+        
         MyButton searchButton = new MyButton("Search");
         searchButton.addActionListener(actionEvent -> searchCollections());
         prepareButton(searchButton);
+        
         add(Box.createRigidArea(new Dimension(0,30)));
+        
         setLabel("Create collection:", true);
+        
         add(Box.createRigidArea(new Dimension(0,8)));
+        
         setLabel("Name:", false);
+        
         add(Box.createRigidArea(new Dimension(0,4)));
+        
         add(nameToCreate);
+        
         add(Box.createRigidArea(new Dimension(0,4)));
+        
         setLabel("Description:", false);
+        
         add(Box.createRigidArea(new Dimension(0,4)));
+        
         add(descToCreate);
+        
         add(Box.createRigidArea(new Dimension(0,25)));
+        
         descToCreate.setLineWrap(true);
         descToCreate.setWrapStyleWord(true);
         MyButton createButton = new MyButton("Create");
@@ -76,7 +98,7 @@ public class CollectionSearcherPanel extends JPanel {
             return;
         searcher.reset();
         searcher.addCollName(nameToSearch.getText());
-        target.addCollections(searcher.getInitializedCollections());
+        target.addCollections(searcher.getCollections(true));
     }
 
     private void createCollections() {

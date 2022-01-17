@@ -1,4 +1,4 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.leftpanel;
 
 import com.example.bd2021bookdex.database.entities.ChangesEntity;
 
@@ -8,23 +8,20 @@ import java.awt.*;
 
 public class RecentChangesLabel extends JPanel{
     private static final int GBC_I = 3;
-    private ChangesEntity change;
-    private JLabel titleLabel = new JLabel();
-    private JLabel desc = new JLabel();
-    private JLabel date = new JLabel();
 
     public RecentChangesLabel(ChangesEntity src, int x, int y) {
         this.setMinimumSize(new Dimension(x,y));
         this.setPreferredSize(new Dimension(x,y));
         this.setMaximumSize(new Dimension(x,y));
-        change = src;
         setBackground(Color.white);
         setBorder(new LineBorder(Color.black));
         setLayout(new GridBagLayout());
-        add(titleLabel,createGbc(0,0));
-        titleLabel.setText(change.getBook().getTitle());
-        add(desc,createGbc(0,1));
-        switch (change.getStatus()) {
+        JLabel titleLabel = new JLabel();
+        add(titleLabel,createGbc(0));
+        titleLabel.setText(src.getBook().getTitle());
+        JLabel desc = new JLabel();
+        add(desc,createGbc(1));
+        switch (src.getStatus()) {
             case FOUND:
                 desc.setText("You came across this book");
                 break;
@@ -39,18 +36,16 @@ public class RecentChangesLabel extends JPanel{
                 break;
                 
         }
-        add(date,createGbc(0,2));
-        date.setText(change.getDate().toString());
+        JLabel date = new JLabel();
+        add(date,createGbc(2));
+        date.setText(src.getDate().toString());
     }
-    public ChangesEntity getChange() {
-        return change;
-    }
-    private GridBagConstraints createGbc(int x, int y) {
+    private GridBagConstraints createGbc(int y) {
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = x;
+        gbc.gridx = 0;
         gbc.gridy = y;
         gbc.insets = new Insets(GBC_I, GBC_I, GBC_I, GBC_I);
-        gbc.insets.left = x != 0 ? 3 * GBC_I : GBC_I;
+        gbc.insets.left = GBC_I;
         gbc.weightx = 0.0;
         gbc.weighty = 0.0;
         return gbc;

@@ -2,7 +2,6 @@ package com.example.bd2021bookdex.database.entities.bookstatusentity;
 
 import com.example.bd2021bookdex.database.entities.BookCollectionEntity;
 import com.example.bd2021bookdex.database.entities.BookEntity;
-import com.example.bd2021bookdex.database.entities.TagEntity;
 import com.example.bd2021bookdex.database.entities.UserEntity;
 
 import javax.persistence.*;
@@ -77,10 +76,6 @@ public class BookStatusEntity implements Serializable {
 
     public BookEntity getBook() {
         return  book;
-    }
-
-    public boolean isAtLeastAdded() {
-        return status != BookStatusEnum.FOUND;
     }
 
     public boolean isOwned() {

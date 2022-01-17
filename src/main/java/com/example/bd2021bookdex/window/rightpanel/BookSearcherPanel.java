@@ -1,4 +1,4 @@
-package com.example.bd2021bookdex.window;
+package com.example.bd2021bookdex.window.rightpanel;
 
 import com.example.bd2021bookdex.apiconnection.ApiSearcher;
 import com.example.bd2021bookdex.database.DatabaseModifier;
@@ -7,15 +7,17 @@ import com.example.bd2021bookdex.database.entities.BookEntity;
 import com.example.bd2021bookdex.database.entities.TagEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEntity;
 import com.example.bd2021bookdex.database.entities.bookstatusentity.BookStatusEnum;
+import com.example.bd2021bookdex.window.ui.MyButton;
+import com.example.bd2021bookdex.window.ui.ScrollBarUI;
+import com.example.bd2021bookdex.window.middlepanel.SelectedScrollPane;
+import com.example.bd2021bookdex.window.leftpanel.LeftContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @org.springframework.stereotype.Component
 public class BookSearcherPanel extends JPanel {
@@ -32,15 +34,34 @@ public class BookSearcherPanel extends JPanel {
     JList<TagEntity> tags;
     JScrollPane scroll;
     JComboBox<String> searchAllBox = new JComboBox<>();
-    LeftPanel toUpdate;
+    LeftContainer toUpdate;
     
     @Autowired
-    public BookSearcherPanel(SelectedScrollPane targ, DatabaseSearcher database, ApiSearcher api, DatabaseModifier modifier, LeftPanel toUpdate) {
+    public BookSearcherPanel(SelectedScrollPane targ, DatabaseSearcher database, ApiSearcher api, DatabaseModifier modifier, LeftContainer toUpdate) {
         this.toUpdate = toUpdate;
         target = targ;
         DBSE = database;
         DBMO = modifier;
         ASE = api;
+        
+        setText();
+        
+        setTags();
+        
+        statuses.addItem("Any");
+        statuses.addItem("Come across");
+        statuses.addItem("Added");
+        statuses.addItem("Being read");
+        statuses.addItem("Finished");
+        statuses.setBackground(Color.white);
+        tags.setBackground(Color.white);
+       
+        searchAllBox.setBackground(Color.white);
+        searchAllBox.addItem("No");
+        searchAllBox.addItem("Yes (Set status and genre may be ignored)");
+    }
+
+    private void setText() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(Box.createRigidArea(new Dimension(0,8)));
         setLabel("Search books:", true);
@@ -67,6 +88,9 @@ public class BookSearcherPanel extends JPanel {
         add(Box.createRigidArea(new Dimension(0,4)));
         setLabel("Tags (use ctrl for multiple selection):", false);
         add(Box.createRigidArea(new Dimension(0,4)));
+    }
+    
+    private void setTags() {
         TagEntity[] tagsEntities = DBSE.getTags().toArray(new TagEntity[]{});
 
         Arrays.sort(tagsEntities);
@@ -90,20 +114,8 @@ public class BookSearcherPanel extends JPanel {
         add(searchButton);
         searchButton.setAlignmentX(CENTER_ALIGNMENT);
         searchButton.setPreferredSize(new Dimension(50,30));
-        
-        statuses.addItem("Any");
-        statuses.addItem("Come across");
-        statuses.addItem("Added");
-        statuses.addItem("Being read");
-        statuses.addItem("Finished");
-        statuses.setBackground(Color.white);
-        tags.setBackground(Color.white);
-       
-        searchAllBox.setBackground(Color.white);
-        searchAllBox.addItem("No");
-        searchAllBox.addItem("Yes (Set status and genre may be ignored)");
     }
-
+    
     public void update() {
         tagsList.clear();
         TagEntity[] tagsEntities = DBSE.getTags().toArray(new TagEntity[]{});
@@ -174,7 +186,7 @@ public class BookSearcherPanel extends JPanel {
         }
         if (searchAllBox.getSelectedIndex() == 0) {
             List<BookStatusEntity> toSet = DBSE.findFoundBooks();
-            target.setBooks(toSet);
+            target.addBooks(toSet);
         }
         else {
             ASE.reset();
@@ -200,7 +212,7 @@ public class BookSearcherPanel extends JPanel {
             try {
                 books = ASE.getBooks(howMany);
             } catch (Exception e) {
-                target.setBooks(toSet);
+                target.addBooks(toSet);
                 return;
             }
 
@@ -209,10 +221,10 @@ public class BookSearcherPanel extends JPanel {
                 if (temp != null)
                     toSet.add(temp);
             }
-            target.setBooks(toSet);
-        
+            target.addBooks(toSet);
+        }
     }
-    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         g.setColor(Color.LIGHT_GRAY);
