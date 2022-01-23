@@ -2,7 +2,6 @@ package com.example.bd2021bookdex.window.leftpanel;
 
 import com.example.bd2021bookdex.database.entities.ChangesEntity;
 import com.example.bd2021bookdex.database.entities.UserEntity;
-import com.example.bd2021bookdex.window.leftpanel.RecentChangesLabel;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -62,5 +61,9 @@ public class RecentChangesList extends JPanel implements Scrollable {
     @Override
     public boolean getScrollableTracksViewportHeight() {
         return false;
+    }
+
+    public void clear() {
+        removeAll();
     }
 }

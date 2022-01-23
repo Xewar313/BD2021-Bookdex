@@ -102,30 +102,34 @@ public class BookDisplayLabel extends JPanel {
         scroll.setBorder(null);
         add(scroll, gbc);
         
+        addAdditionalLabels();
         
+        setValues();
+        
+        addButtons();
+    }
+    
+    private void addAdditionalLabels() {
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 1;
         gbc.gridy = 4;
-        gbc.gridwidth = 1;
-        gbc.gridheight = 1;
         add(pageCount, gbc);
         pageCount.setMinimumSize(new Dimension(100,20));
         pageCount.setPreferredSize(new Dimension(100,20));
         pageCount.setMaximumSize(new Dimension(100,20));
-        
+
         gbc.gridx = 2;
         add(category, gbc);
         category.setMinimumSize(new Dimension(75,20));
         category.setPreferredSize(new Dimension(75,20));
         category.setMaximumSize(new Dimension(75,20));
-        
+
         gbc.gridx = 3;
         add(genre, gbc);
         genre.setMinimumSize(new Dimension(75,20));
         genre.setPreferredSize(new Dimension(75,20));
         genre.setMaximumSize(new Dimension(75,20));
-        
-        setValues();
-        
-        addButtons();
     }
     
     private void addButtons() {
@@ -160,12 +164,36 @@ public class BookDisplayLabel extends JPanel {
         });
         toAdd.setFont(toAdd.getFont().deriveFont(9.55f));
     }
+    
     private void setValues() {
         
         if (book.getStatus() == BookStatusEnum.READ) {
             desc.setBackground(new Color(255,223,0));
             scroll.getVerticalScrollBar().setUI(new ScrollBarUI(new Color(255, 223, 0)));
         }
+        setTitleAndAuthorNames();
+
+        startPictureDownload();
+        
+        setAdditionalLabels();
+        
+        int i = 0;
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridy = 5;
+        for (JLabel l : tags) {
+            gbc.gridx = i++;
+            add(l, gbc);
+        }
+        if (book.isOwned()) {
+            this.setBackground(new Color(255, 223, 0));
+        }
+        else {
+            this.setBackground(Color.white);
+        }
+    }
+    
+    private void setTitleAndAuthorNames() {
         String toAdd = book.getTitle();
 
         if (toAdd.length() > 40) {
@@ -175,7 +203,7 @@ public class BookDisplayLabel extends JPanel {
         Set<AuthorEntity> authors = book.getBook().getAuthors();
         StringBuilder names = new StringBuilder();
         for (AuthorEntity a : authors) {
-          
+
             if (authorLabel.getFontMetrics(authorLabel.getFont()).stringWidth(names.toString()) +
                     authorLabel.getFontMetrics(authorLabel.getFont()).stringWidth(a.getName()) > this.getPreferredSize().width /3 * 2) {
                 names.append(".....");
@@ -189,8 +217,9 @@ public class BookDisplayLabel extends JPanel {
             names.deleteCharAt(names.length() - 1);
         }
         authorLabel.setText(names.toString());
-
-
+    }
+    
+    private void startPictureDownload() {
         try {
             if (book.getStatus() == BookStatusEnum.FOUND)
                 throw new Exception();
@@ -210,10 +239,13 @@ public class BookDisplayLabel extends JPanel {
             } catch (Exception ignored){}
 
         }
+    }
+    
+    private void setAdditionalLabels() {
         if (book.getBook().getDesc() != null)
             desc.setText(book.getBook().getDesc());
         if (book.getBook().getCategory() != null) {
-            toAdd = book.getBook().getCategory();
+            String toAdd = book.getBook().getCategory();
             if (toAdd.length() > 15) {
                 toAdd = toAdd.substring(0,13) + "...";
             }
@@ -236,25 +268,12 @@ public class BookDisplayLabel extends JPanel {
             temp.setPreferredSize(new Dimension(75,20));
             temp.setMaximumSize(new Dimension(75,20));
         }
-        int i = 0;
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridy = 5;
-        for (JLabel l : tags) {
-            gbc.gridx = i++;
-            add(l, gbc);
-        }
-        if (book.isOwned()) {
-            this.setBackground(new Color(255, 223, 0));
-        }
-        else {
-            this.setBackground(Color.white);
-        }
     }
+    
     public BookStatusEntity getBook() {
         return book;
     }
-
+    
     public void update() {
         book = searcher.getUpdatedStatus(book);
         for (var label : tags) {

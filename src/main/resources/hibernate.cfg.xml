@@ -15,11 +15,11 @@
         <!-- Assume test is the database name -->
 
         <property name = "hibernate.connection.url">
-            jdbc:postgresql://localhost:5432/test
+            jdbc:postgresql://localhost:5432/bookdex
         </property>
 
         <property name = "hibernate.connection.username">
-            tester
+            username
         </property>
         
         <property name = "hibernate.connection.password">

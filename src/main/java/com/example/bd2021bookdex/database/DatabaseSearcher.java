@@ -77,7 +77,7 @@ public class DatabaseSearcher extends BookSearcher {
                 tempList.add(cb.like(cb.lower(from.get("genre")), '%' + genre.toLowerCase() + '%'));
             toAdd.add(cb.and(tempList.toArray(new Predicate[]{})));
         }
-    }
+    }    
     
     public List<BookStatusEntity> findFoundBooks() {
         Transaction tx = null;
@@ -109,6 +109,7 @@ public class DatabaseSearcher extends BookSearcher {
                 predicates.add(cb.like(cb.lower(bookJoin.get("title")), '%' + title.toLowerCase() + '%'));
 
             addCategoryAndGenrePredicates(cb, bookJoin, predicates);
+            
             query.where(cb.and(predicates.toArray(new Predicate[] {})));
             query.multiselect(root.get("id"), cb.count(root)).groupBy(root.get("id"));
             Query<Object[]> resultsId = session.createQuery(query);
@@ -151,9 +152,10 @@ public class DatabaseSearcher extends BookSearcher {
                 addTagsPredicates(cb, root, predicates);
             }
             for (String title: titles)
-                predicates.add(cb.like(root.get("title"), '%' + title + '%'));
+                predicates.add(cb.like(cb.lower(root.get("title")), '%' + title.toLowerCase() + '%'));
 
             addCategoryAndGenrePredicates(cb, root, predicates);
+            
             query.where(cb.and(predicates.toArray(new Predicate[] {})));
             query.multiselect(root.get("id"), cb.count(root)).groupBy(root.get("id"));
             Query<Object[]> resultsId = session.createQuery(query);
@@ -321,5 +323,28 @@ public class DatabaseSearcher extends BookSearcher {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public UserEntity getUserByName(String text) {
+        Transaction tx = null;
+        UserEntity results = null;
+        try (Session session = factory.openSession()) {
+            tx = session.beginTransaction();
+            CriteriaBuilder cb = session.getCriteriaBuilder();
+            CriteriaQuery<UserEntity> query = cb.createQuery(UserEntity.class);
+            Root<UserEntity> root = query.from(UserEntity.class);
+            query.where(cb.equal(root.get("username"), text));
+            query.select(root);
+
+            Query<UserEntity> q = session.createQuery(query);
+            if (!q.getResultList().isEmpty())
+                results = q.getSingleResult();
+            tx.commit();
+        }
+        catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+        return results;
     }
 }

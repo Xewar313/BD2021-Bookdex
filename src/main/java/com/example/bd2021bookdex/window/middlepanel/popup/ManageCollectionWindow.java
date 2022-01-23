@@ -37,7 +37,17 @@ public class ManageCollectionWindow extends JDialog {
         gbc.gridx = 1;
         add(new JLabel("Remove:"), gbc);
 
+        
+        addListsAndButtons(toManage, searcher, modifier);
+        
+        setModalityType(ModalityType.APPLICATION_MODAL);
+        setLocation(screen.width/2 - getSize().width/2, screen.height/2 - getSize().height/2);
+        setBackground(Color.white);
+        setVisible(true);
+    }
 
+    private void addListsAndButtons(BookStatusEntity toManage, DatabaseSearcher searcher, DatabaseModifier modifier) {
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridy = 2;
         gbc.gridx = 0;
         BookCollectionEntity[] collections = searcher.getStatusCollection(toManage).toArray(new BookCollectionEntity[]{});
@@ -67,7 +77,7 @@ public class ManageCollectionWindow extends JDialog {
 
             }
         });
-        
+
         gbc.gridx = 1;
         toAdd = new MyButton("Add");
         add(toAdd, gbc);
@@ -87,13 +97,8 @@ public class ManageCollectionWindow extends JDialog {
         toAdd = new MyButton("Confirm");
         add(toAdd, gbc);
         toAdd.addActionListener(actionEvent -> confirm(toManage, modifier, addedCollections));
-
-        setModalityType(ModalityType.APPLICATION_MODAL);
-        setLocation(screen.width/2 - getSize().width/2, screen.height/2 - getSize().height/2);
-        setBackground(Color.white);
-        setVisible(true);
     }
-
+    
     private DefaultListModel<BookCollectionEntity> prepareListModel(BookCollectionEntity[] tagEntities) {
         DefaultListModel <BookCollectionEntity> tagsList = new DefaultListModel<>();
         tagsList.addAll(List.of(tagEntities));

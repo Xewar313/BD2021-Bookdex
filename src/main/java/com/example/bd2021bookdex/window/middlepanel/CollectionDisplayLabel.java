@@ -30,9 +30,33 @@ public class CollectionDisplayLabel extends JPanel {
         setLayout(new GridBagLayout());
         setBorder(new LineBorder(Color.black, 1));
 
+        addTitles(x);
+
+        addDesc(x, y);        
+
+        JLabel bookCount = new JLabel();
+        add(bookCount, createGbc(4));
+        bookCount.setText("Number of books: " + collection.getBooks().size());
+        addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {}
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                toAdd.addBooks(new LinkedList<>(collection.getBooks()));
+            }
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {}
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {}
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {}
+        });
+    }
+   
+    private void addTitles(int x) {
         JLabel nameLabel = new JLabel();
         add(nameLabel, createGbc(0));
-        nameLabel.setText(src.getName());
+        nameLabel.setText(collection.getName());
 
         JLabel booksLabel = new JLabel();
         add(booksLabel, createGbc(1));
@@ -50,7 +74,9 @@ public class CollectionDisplayLabel extends JPanel {
             books.deleteCharAt(books.length() - 1);
         }
         booksLabel.setText(books.toString());
-
+    }
+    
+    private void addDesc(int x, int y) {
         JTextArea desc = new JTextArea();
         desc.setLineWrap(true);
         desc.setEditable(false);
@@ -65,38 +91,8 @@ public class CollectionDisplayLabel extends JPanel {
         desc.setLineWrap(true);
         desc.setText(collection.getDesc());
         add(scroll, createGbc(2));
-
-        JLabel bookCount = new JLabel();
-        add(bookCount, createGbc(4));
-        bookCount.setText("Number of books: " + collection.getBooks().size());
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                
-            }
-
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                toAdd.addBooks(new LinkedList<>(collection.getBooks()));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent mouseEvent) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-
-            }
-        });
     }
-   
+    
     private GridBagConstraints createGbc(int y) {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;

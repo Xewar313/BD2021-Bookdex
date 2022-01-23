@@ -9,11 +9,11 @@ import java.awt.*;
 @org.springframework.stereotype.Component
 public class SearcherAndModifierContainer extends JPanel {
     BookSearcherPanel bookSearcher;
-    CollectionSearcherPanel collectionSearcher;
+    CollectionPanel collectionSearcher;
     CreatorPanel creator;
     
     @Autowired
-    public SearcherAndModifierContainer(BookSearcherPanel book, CollectionSearcherPanel collection, CreatorPanel creat) {
+    public SearcherAndModifierContainer(BookSearcherPanel book, CollectionPanel collection, CreatorPanel creat) {
         bookSearcher = book;
         collectionSearcher = collection;
         creator = creat;
@@ -25,6 +25,14 @@ public class SearcherAndModifierContainer extends JPanel {
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         Dimension buttonSize = new Dimension(thisSize.width / 3, thisSize.width / 6);
+        
+        addButtons(buttonSize);
+        addPanels(new Dimension(thisSize.width, thisSize.height - buttonSize.height));
+        
+    }
+    
+    private void addButtons(Dimension buttonSize) {
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         MyButton first = new MyButton("Books");
@@ -36,7 +44,7 @@ public class SearcherAndModifierContainer extends JPanel {
         });
         prepButton(first, buttonSize);
         add(first,gbc);
-        
+
         gbc.gridx = 1;
         gbc.gridy = 0;
         MyButton second = new MyButton("Collections");
@@ -47,7 +55,7 @@ public class SearcherAndModifierContainer extends JPanel {
         });
         prepButton(second, buttonSize);
         add(second,gbc);
-        
+
         gbc.gridx = 2;
         gbc.gridy = 0;
         MyButton third = new MyButton("Create");
@@ -58,27 +66,28 @@ public class SearcherAndModifierContainer extends JPanel {
         });
         prepButton(third, buttonSize);
         add(third,gbc);
-        
+    }
+    
+    private void addPanels(Dimension panelSize) {
+        GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 3;
         bookSearcher.setVisible(true);
         collectionSearcher.setVisible(false);
         creator.setVisible(false);
-        
-        Dimension panelSize = new Dimension(thisSize.width, thisSize.height - buttonSize.height);
+
         bookSearcher.setPreferredSize(panelSize);
         collectionSearcher.setPreferredSize(panelSize);
         creator.setPreferredSize(panelSize);
-        
-        bookSearcher.setSizes(thisSize.width);
-        collectionSearcher.setSizes(thisSize.width);
-        creator.setSizes(thisSize.width);
-        
+
+        bookSearcher.setSizes(panelSize.width);
+        collectionSearcher.setSizes(panelSize.width);
+        creator.setSizes(panelSize.width);
+
         add(bookSearcher, gbc);
         add(collectionSearcher, gbc);
         add(creator, gbc);
-        
     }
     
     private void prepButton(MyButton toPrepare, Dimension buttonSize) {

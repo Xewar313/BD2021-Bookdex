@@ -5,23 +5,17 @@ import com.example.bd2021bookdex.database.DatabaseModifier;
 import com.example.bd2021bookdex.database.DatabaseSearcher;
 import com.example.bd2021bookdex.database.entities.AuthorEntity;
 import com.example.bd2021bookdex.database.entities.BookEntity;
-import com.google.gson.*;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -44,10 +38,13 @@ public class ApiSearcher extends BookSearcher {
         int i = 0;
         List<BookEntity> toReturn = new LinkedList<>();
         while (toReturn.size() < x) {
-            String dsca = getBooksAsJson(i * 10);
-            JsonObject body = gson.fromJson(getBooksAsJson(i * 10), JsonObject.class);
-            JsonArray books = body.get("items").getAsJsonArray();
-
+            JsonObject body = gson.fromJson(getBooksAsJson(i * 40), JsonObject.class);
+            JsonArray books;
+            try {
+                books = body.get("items").getAsJsonArray();
+            } catch (Exception e) {
+                return toReturn;
+            }
             for (JsonElement book : books) {
                 BookEntity toAdd;
                 JsonObject bookObject = book.getAsJsonObject();
@@ -116,14 +113,12 @@ public class ApiSearcher extends BookSearcher {
             for (String title : titles) {
                 urlCreator.append(title).append('+');
             }
-            urlCreator.deleteCharAt(urlCreator.length() - 1);
         }
         if (!authors.isEmpty()) {
             urlCreator.append("inauthor:");
             for (String author : authors) {
                 urlCreator.append(author).append("+");
             }
-            urlCreator.deleteCharAt(urlCreator.length() - 1);
         }
 
         if (!categories.isEmpty()) {
@@ -131,13 +126,12 @@ public class ApiSearcher extends BookSearcher {
             for (String category : categories) {
                 urlCreator.append(category).append("+");
             }
-            urlCreator.deleteCharAt(urlCreator.length() - 1);
         }
+        urlCreator.deleteCharAt(urlCreator.length() - 1);
         urlCreator.append("&startIndex=").append(start).append("&maxResults=40");
         URL url = new URL(urlCreator.toString());
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
-        String jsons = con.getRequestMethod();
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
         String inputLine;

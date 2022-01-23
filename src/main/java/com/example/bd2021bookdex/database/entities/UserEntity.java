@@ -64,4 +64,8 @@ public class UserEntity implements Serializable {
     public String getUsername() {
         return username;
     }
+
+    public String getPassword() {
+        return password;
+    }
 }

@@ -44,9 +44,15 @@ public class BookSearcherPanel extends JPanel {
         DBMO = modifier;
         ASE = api;
         
-        setText();
+        setBasicInput();
         
-        setTags();
+        setTagsInput();
+
+        MyButton searchButton = new MyButton("Search");
+        searchButton.addActionListener(actionEvent -> searchBooks());
+        add(searchButton);
+        searchButton.setAlignmentX(CENTER_ALIGNMENT);
+        searchButton.setPreferredSize(new Dimension(50,30));
         
         statuses.addItem("Any");
         statuses.addItem("Come across");
@@ -61,7 +67,7 @@ public class BookSearcherPanel extends JPanel {
         searchAllBox.addItem("Yes (Set status and genre may be ignored)");
     }
 
-    private void setText() {
+    private void setBasicInput() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(Box.createRigidArea(new Dimension(0,8)));
         setLabel("Search books:", true);
@@ -90,7 +96,7 @@ public class BookSearcherPanel extends JPanel {
         add(Box.createRigidArea(new Dimension(0,4)));
     }
     
-    private void setTags() {
+    private void setTagsInput() {
         TagEntity[] tagsEntities = DBSE.getTags().toArray(new TagEntity[]{});
 
         Arrays.sort(tagsEntities);
@@ -104,16 +110,12 @@ public class BookSearcherPanel extends JPanel {
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.getVerticalScrollBar().setUI(new ScrollBarUI(Color.white));
         add(scroll);
+        
         add(Box.createRigidArea(new Dimension(0,4)));
-        setLabel("Do you want to find new books", false);
+        setLabel("Search new books?", false);
         add(Box.createRigidArea(new Dimension(0,4)));
         add(searchAllBox);
         add(Box.createRigidArea(new Dimension(0,50)));
-        MyButton searchButton = new MyButton("Search");
-        searchButton.addActionListener(actionEvent -> searchBooks());
-        add(searchButton);
-        searchButton.setAlignmentX(CENTER_ALIGNMENT);
-        searchButton.setPreferredSize(new Dimension(50,30));
     }
     
     public void update() {
@@ -189,42 +191,45 @@ public class BookSearcherPanel extends JPanel {
             target.addBooks(toSet);
         }
         else {
-            ASE.reset();
-            ASE.addAuthor(authors.getText());
-            ASE.addTitles(title.getText());
-            ASE.addGenres(genres.getText());
-            ASE.addCategories(categories.getText());
-       
-            List<BookEntity> books = DBSE.findBooks();
-            List<BookStatusEntity> toSet = new LinkedList<>();
-            for (var book : books) {
-                var temp = DBMO.tryAddingConnection(book,DBSE.getUser());
-                if (temp != null)
-                    toSet.add(temp);
-            }
-            int howMany;
-            if (toSet.size() > 10) {
-                howMany = 5;
-            }
-            else {
-                howMany = 15 - toSet.size();
-            }
-            try {
-                books = ASE.getBooks(howMany);
-            } catch (Exception e) {
-                target.addBooks(toSet);
-                return;
-            }
-
-            for (var book : books) {
-                var temp = DBMO.tryAddingConnection(book, DBSE.getUser());
-                if (temp != null)
-                    toSet.add(temp);
-            }
-            target.addBooks(toSet);
+            searchNewBooks();
         }
     }
-    
+    private void searchNewBooks() {
+        ASE.reset();
+        ASE.addAuthor(authors.getText());
+        ASE.addTitles(title.getText());
+        ASE.addGenres(genres.getText());
+        ASE.addCategories(categories.getText());
+
+        List<BookEntity> books = DBSE.findBooks();
+        List<BookStatusEntity> toSet = new LinkedList<>();
+        for (var book : books) {
+            var temp = DBMO.tryAddingConnection(book,DBSE.getUser());
+            if (temp != null)
+                toSet.add(temp);
+        }
+        int howMany;
+        if (toSet.size() > 10) {
+            howMany = 5;
+        }
+        else {
+            howMany = 15 - toSet.size();
+        }
+        try {
+            books = ASE.getBooks(howMany);
+        } catch (Exception e) {
+            target.addBooks(toSet);
+            e.printStackTrace();
+            return;
+        }
+
+        for (var book : books) {
+            var temp = DBMO.tryAddingConnection(book, DBSE.getUser());
+            if (temp != null)
+                toSet.add(temp);
+        }
+        target.addBooks(toSet);
+    }
     @Override
     protected void paintComponent(Graphics g) {
         g.setColor(Color.LIGHT_GRAY);

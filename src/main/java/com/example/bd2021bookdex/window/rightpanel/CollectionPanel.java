@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 
 @org.springframework.stereotype.Component
-public class CollectionSearcherPanel extends JPanel {
+public class CollectionPanel extends JPanel {
     SelectedScrollPane target;
     DatabaseSearcher searcher;
     DatabaseModifier modifier;
@@ -19,59 +19,68 @@ public class CollectionSearcherPanel extends JPanel {
     JTextArea nameToCreate = new JTextArea();
     JTextArea descToCreate = new JTextArea();
     @Autowired
-    public CollectionSearcherPanel(SelectedScrollPane targ, DatabaseSearcher searcher, DatabaseModifier modifier) {
+    public CollectionPanel(SelectedScrollPane targ, DatabaseSearcher searcher, DatabaseModifier modifier) {
         this.modifier = modifier;
         this.searcher = searcher;
         target = targ;
+
+        addCollectionSearcher();
+        addCollectionCreator();
         
+    }
+
+    private void addCollectionSearcher() {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         add(Box.createRigidArea(new Dimension(0,8)));
-        
+
         setLabel("Search collection:", true);
-        
+
         add(Box.createRigidArea(new Dimension(0,8)));
-        
+
         setLabel("Name:", false);
-        
+
         add(Box.createRigidArea(new Dimension(0,4)));
-        
+
         add(nameToSearch);
-        
+
         add(Box.createRigidArea(new Dimension(0,25)));
-        
+
         MyButton searchButton = new MyButton("Search");
         searchButton.addActionListener(actionEvent -> searchCollections());
         prepareButton(searchButton);
-        
+
+    }
+    
+    private void addCollectionCreator() {
         add(Box.createRigidArea(new Dimension(0,30)));
-        
+
         setLabel("Create collection:", true);
-        
+
         add(Box.createRigidArea(new Dimension(0,8)));
-        
+
         setLabel("Name:", false);
-        
+
         add(Box.createRigidArea(new Dimension(0,4)));
-        
+
         add(nameToCreate);
-        
+
         add(Box.createRigidArea(new Dimension(0,4)));
-        
+
         setLabel("Description:", false);
-        
+
         add(Box.createRigidArea(new Dimension(0,4)));
-        
+
         add(descToCreate);
-        
+
         add(Box.createRigidArea(new Dimension(0,25)));
-        
+
         descToCreate.setLineWrap(true);
         descToCreate.setWrapStyleWord(true);
         MyButton createButton = new MyButton("Create");
         createButton.addActionListener(actionEvent -> createCollections());
         prepareButton(createButton);
     }
-
+    
     private void prepareButton(MyButton button) {
         add(button);
         button.setAlignmentX(CENTER_ALIGNMENT);
