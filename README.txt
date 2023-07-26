@@ -9,4 +9,4 @@ Each value can be changed in hibernate.cfg.xml file.
 
 To start using it, first create new user in tab create and then select new user in dropbox on the left
 
-After that application should be working properly.
+After that application should be working properl.
